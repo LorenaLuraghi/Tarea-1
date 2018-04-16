@@ -1,0 +1,133 @@
+---
+title: "Tarea individual 1"
+author: "Lorena Luraghi"
+date: "16/4/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(gapminder)
+```
+## Entrega
+
+La tarea debe ser realizada en RMarkdown en un repositorio de GitHub llamado "Tarea 1".
+La tarea es individual por lo que cada uno tiene que escribir su propia versión de la tarea.
+El repositorio debe contener unicamente el archivo .Rmd con la solución de la tarea.
+Vamos a utilizar la librería `gapminder`, por lo que si no la usaste anteriormente tenés que instalarla y luego cargarla.
+Para obtener la descripción del paquete `library(help = "gapminder")` y para saber sobre la base `?gapminder`.
+
+##  Idea básica de regresión lineal 
+
+Una regresión lineal es una aproximación utilizada para modelar la relación entre dos variables que llamaremos `X` e `Y`. Donde Y es la variable que queremos explicar y X la variable explicativa (regresión simple).
+
+El análisis de regresión ajusta una curva a travéz  de los datos que representa la media de Y dado un valor especificado de X.
+Si ajustamos una regresión lineal a los datos consideramos "la curva media" como aquella que mejor ajusta a los datos.
+
+Algunas veces ajustamos curvas genéricas promediando puntos cercanos entre si con  métodos de suavizado no necesariamente lineales.
+¿Cómo incluimos una recta de regresión en nuestro gráfico?
+
+ajustamos una recta de regresión a los datos en  Para agregar una linea de regresión o una curva tinenes que agregar una capa a tu gráfico `geom_smoth`. Probablemente dos de los argumentos más útiles de `geom_smoth` son:
+
+- `method = ...`
+    * ..."lm" para una linea recta. `lm`  "Linear Model".
+    * ...otro para una curva genérica (llamada de suavizado; por defecto, es la parte `smooth` de `geom_smooth`).
+    * `se=...` controla si los intervalos de confianza son dibujados o no.
+
+Ejemplo:
+```{r, echo=TRUE}
+vc1 <- ggplot(gapminder, aes(year, lifeExp)) +
+    geom_point() 
+vc1 + geom_smooth(se = FALSE)
+
+```
+En este caso  `geom_smooth()` está usando `method = 'gam'`
+
+```{r, echo=TRUE}
+vc1 + geom_smooth(method = "lm")
+```
+
+
+## Ejercicio 1
+
+Hacer un gráfico de dispersión que tenga en el eje `y` `year` y en el eje `x`  `lifeExp`, los puntos deben estar coloreados por la variable `continent`. Para este plot ajustá una recta de regresión para cada continente sin incluir las barras de error. Las etiquetas de los ejes deben ser claras y describir las variables involucradas. Incluir un `caption` en la figura con algún comentario de interés que describa el gráfico.
+
+```{r}
+data(gapminder)
+ggplot(gapminder,aes(lifeExp,year,colour=continent)) + geom_point() + 
+  geom_smooth(aes(colour=continent),se=FALSE) +
+  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes") 
+
+
+```
+
+
+## Ejercicio 2 
+
+Omitir la capa de  `geom_point` del gráfico anterior. Las lineas aún aparecen aunque los puntos no. ¿Porqué sucede esto? 
+
+```{r}
+data(gapminder)
+ggplot(gapminder,aes(lifeExp,year,colour=continent)) + 
+  geom_smooth(aes(colour=continent),se=FALSE) +
+  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes") 
+
+```
+Sucede porque ggplot2 construye de forma independiente cada parte del gráfico a partir de los argumentos de la función ggplot().
+
+## Ejercicio 3
+
+El siguiente es un gráfico de dispersión entre `lifeExp` y `gdpPercap`  coloreado por la variable `continent`. Usando como elemento estético color (`aes`) nosotros podemos distinguir los distintos continentes usando diferentes colores de similar manera usando forma (`shape`).
+
+```{r, echo = FALSE}
+ggplot(gapminder, aes(gdpPercap, lifeExp, colour = continent)) +
+    geom_point() 
+```
+
+El gráfico anterior está sobrecargado, ¿de que forma modificarías el gráfico para que sea más clara la comparación para los distintos continentes y porqué?
+Las etiquetas de los ejes deben ser claras y describir las variables involucradas. Comentá alguna característica interesante que describa lo que aprendes viendo el gráfico.
+
+```{r}
+library(tidyverse)
+gapminder <- filter(gapminder, gdpPercap<59000)
+ggplot(gapminder, aes(gdpPercap, lifeExp, colour = continent)) +
+    geom_point() + facet_wrap(~continent) + labs(x="PBI per capita",y="Esperanza de vida")
+```
+Para poder observar claramente la esperanza de vida en cada continente utilizaria un facet_wrap, aun asi se observa que para Asia hay algunas observaciónes outliers, al eliminarlas podemos ver un gráfico mas claro para lo que queremos observar.
+Con respecto a la información que vemos en el gráfico, observamos un claro crecimiento del PBI per capita a lo largo de los años, con exepción de Africa, el cual no tiene una tendencia definida.
+
+## Ejercicio 4
+
+Hacer un gráfico de lineas que tenga en el eje `x` `year` y en el eje `y`  `gdpPercap` para cada continente en una misma ventana gráfica. En cada continente, el gráfico debe contener una linea para cada país a lo largo del tiempo (serie de tiempo de `gdpPercap`). Las etiquetas de los ejes deben ser claras y describir las variables involucradas. Incluir un `caption` en la figura con algún comentario de interés que describa el gráfico.
+
+```{r}
+
+ggplot(gapminder,aes(year,gdpPercap, colour=country))+geom_line(aes(colour=continent, group=country))+facet_wrap(~continent)+
+  labs(x="Año", y="PBI per capita", caption="Figura 4: PBI per capita por país de cada continente")
+
+```
+
+Pregunta: Es posible poner un caption mas largo sin que quede cortado?? 
+
+## Ejercicio 5 
+
+Usando los datos `gapminder` seleccione una visualización que describa algún aspecto de los datos que no exploramos. Comente algo interesante que se puede aprender de su gráfico.
+
+Histograma para observar la distribución mundial a lo largo de los años, para hacer la visualización mas sencilla elegi algunos años para ver la evolución.
+
+```{r}
+data5 <- filter(gapminder,year>1950) %>% group_by(continent,year) %>% summarise(pop_n=n())
+ggplot(data5,aes(year,pop_n)) + geom_line() + facet_wrap(~continent)
+```
+No hay un aumento significativo de la población de cada continente en el correr de los años...
+
+Por lo tanto voy a realizar un histograma para un solo año con la población para cada continente.
+
+```{r}
+data5b <- filter(gapminder,year==2007) %>% group_by(continent) %>% summarise(pop_n=n())
+ggplot(data5b,aes(continent,pop_n)) + geom_bar(stat="identity",position="dodge") + labs(y="Población",x= "Continente")
+```
