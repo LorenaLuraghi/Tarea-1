@@ -58,26 +58,37 @@ Hacer un gráfico de dispersión que tenga en el eje `y` `year` y en el eje `x` 
 
 ```{r}
 data(gapminder)
-ggplot(gapminder,aes(lifeExp,year,colour=continent)) + geom_point() + 
+ggplot(gapminder,aes(lifeExp,year,colour=continent)) + geom_point() +
   geom_smooth(aes(colour=continent),se=FALSE) +
-  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes") 
+  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes")
 
 
 ```
 
+\fbox{\begin{minipage}{48em}
+ Los ejes x e y deben ser al revés  pero posiblemente no viste la versión corregida de la tarea donde estaba arreglado esto. El método debería ser `method=lm` ya que pedí un ajuste lineal. A su vez no incluiste comentarios de interés que describa el gráfico.
+ si incluís fig.cap en el chunck de código pone la numeración de la figura directamente
+\end{minipage}}
 
-## Ejercicio 2 
 
-Omitir la capa de  `geom_point` del gráfico anterior. Las lineas aún aparecen aunque los puntos no. ¿Porqué sucede esto? 
+
+## Ejercicio 2
+
+Omitir la capa de  `geom_point` del gráfico anterior. Las lineas aún aparecen aunque los puntos no. ¿Porqué sucede esto?
 
 ```{r}
 data(gapminder)
-ggplot(gapminder,aes(lifeExp,year,colour=continent)) + 
+ggplot(gapminder,aes(lifeExp,year,colour=continent)) +
   geom_smooth(aes(colour=continent),se=FALSE) +
-  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes") 
+  labs(x="Esperanza de vida", y="Año",caption="Figura 1:Esperanza de vida a lo largo de los años en los 5 continentes")
 
 ```
 Sucede porque ggplot2 construye de forma independiente cada parte del gráfico a partir de los argumentos de la función ggplot().
+
+
+\fbox{\begin{minipage}{48em}
+Ver solución 
+\end{minipage}}
 
 ## Ejercicio 3
 
@@ -85,7 +96,7 @@ El siguiente es un gráfico de dispersión entre `lifeExp` y `gdpPercap`  colore
 
 ```{r, echo = FALSE}
 ggplot(gapminder, aes(gdpPercap, lifeExp, colour = continent)) +
-    geom_point() 
+    geom_point()
 ```
 
 El gráfico anterior está sobrecargado, ¿de que forma modificarías el gráfico para que sea más clara la comparación para los distintos continentes y porqué?
@@ -100,18 +111,29 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, colour = continent)) +
 Para poder observar claramente la esperanza de vida en cada continente utilizaria un facet_wrap, aun asi se observa que para Asia hay algunas observaciónes outliers, al eliminarlas podemos ver un gráfico mas claro para lo que queremos observar.
 Con respecto a la información que vemos en el gráfico, observamos un claro crecimiento del PBI per capita a lo largo de los años, con exepción de Africa, el cual no tiene una tendencia definida.
 
+\fbox{\begin{minipage}{48em}
+Para cambiar la etiqueta de la leyenda también podés usar `labs(colour ="Continente")`.
+Falta el título de la figura. Corregir ortografía. 
+Filtraste los datos de gapninder y los guardaste en un objeto con el mismo nombre, no es recomendable porque está removiendo información para lo que sigue.
+\end{minipage}}
+
+
 ## Ejercicio 4
 
 Hacer un gráfico de lineas que tenga en el eje `x` `year` y en el eje `y`  `gdpPercap` para cada continente en una misma ventana gráfica. En cada continente, el gráfico debe contener una linea para cada país a lo largo del tiempo (serie de tiempo de `gdpPercap`). Las etiquetas de los ejes deben ser claras y describir las variables involucradas. Incluir un `caption` en la figura con algún comentario de interés que describa el gráfico.
 
 ```{r}
 
-ggplot(gapminder,aes(year,gdpPercap, colour=country))+geom_line(aes(colour=continent, group=country))+facet_wrap(~continent)+
-  labs(x="Año", y="PBI per capita", caption="Figura 4: PBI per capita por país de cada continente")
+ ggplot(gapminder,aes(year,gdpPercap, colour=country))+geom_line(aes(colour=continent, group=country))+facet_wrap(~continent)+ 
+labs(x="Año", y="PBI per capita", caption="Figura 4: PBI per capita por país de cada continente") 
 
-```
+``` 
 
-Pregunta: Es posible poner un caption mas largo sin que quede cortado?? 
+Pregunta: Es posible poner un caption mas largo sin que quede cortado??  
+
+\fbox{\begin{minipage}{48em}
+Si es posible lo expliqué en clase y teneés ejemplos en las soluciones de las actividades y las tareas. Usá fig.cap en el chunck de código. Falta incluir algún comentario sobre lo que aprendés del gráfico. En este como en el caso anterior no es necesario incluir color para continente ya que `facet\_wrap` nos da la misma información que color, pero no está mal.
+\end{minipage}}
 
 ## Ejercicio 5 
 
@@ -125,9 +147,21 @@ ggplot(data5,aes(year,pop_n)) + geom_line() + facet_wrap(~continent)
 ```
 No hay un aumento significativo de la población de cada continente en el correr de los años...
 
+\fbox{\begin{minipage}{48em}
+Lo que decís que hacés no es lo que hiciste. Si mirás el gráfico deberías notar que algo no estaá bien. Los datos que estaás dibujando el número de paises por continente. No hay título no arreglaste los ejes. 
+\end{minipage}}
 Por lo tanto voy a realizar un histograma para un solo año con la población para cada continente.
 
 ```{r}
 data5b <- filter(gapminder,year==2007) %>% group_by(continent) %>% summarise(pop_n=n())
 ggplot(data5b,aes(continent,pop_n)) + geom_bar(stat="identity",position="dodge") + labs(y="Población",x= "Continente")
 ```
+
+\fbox{\begin{minipage}{48em}
+Este gráfico está mal, no es un histograma es un gráfico de barras y lo que estás dibujando es la cantidad de paises por continente en el 2007, no la población. Antes de hacer un gráfico te conviene mirar los datos que estás usando y ver que tengan sentido, en este caso no lo tienen. 
+\end{minipage}}
+
+\fbox{\begin{minipage}{48em}
+Tenés que trabajar más en la interpretación de los resultados, y arreglar las etiquetas y los títulos. Los gráficos deben ser autocontenidos uno tiene que leer los ejes, leyendas y el título y entender la información que se muestra. Revisar ortografía y redacción en general.
+PUNTOS:75/100
+\end{minipage}}
